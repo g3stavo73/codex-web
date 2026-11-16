@@ -1,3 +1,4 @@
+
 "use strict";
 
 /*
@@ -10,12 +11,12 @@
  * IMPORTANT ARCHITECTURE
  * ----------------------
  * The browser never starts codex app-server, never reads its stdio, and never
- * stores ChatGPT/GitHub credentials. The ASP.NET Core backend owns the
+ * stores ChatGPT/GitHub credentials. The Node.js backend owns the
  * Codex JSON-RPC connection, OAuth callbacks, MCP configuration and secrets.
  *
- * Configure the API base URL before deployment by editing API_BASE_URL below.
- * On the GitHub Pages site, leaving it empty is deliberate: GitHub Pages is
- * static hosting and is not the Codex backend.
+ * Node.js serves the frontend and API from the same local origin.
+ * This browser client intentionally does not target a remote backend: the
+ * local server rejects non-local requests.
  *
  * BACKEND HTTP CONTRACT USED BY THIS FILE
  * ---------------------------------------
@@ -92,26 +93,25 @@
  *   Backend translates mcpServer/oauthLogin/completed notifications.
  *
  * These HTTP routes are the Codex Web adapter contract, not OpenAI endpoints.
- * They must be implemented by the ASP.NET Core backend before live features
- * can work. The JavaScript does not simulate a successful login or response.
+ * They are implemented by server.cjs. The JavaScript never simulates
+ * successful authentication, tool access, or a Codex response.
  */
 
 (() => {
-  // Empty on GitHub Pages means "backend not configured". For local use,
-  // leave empty when the API is served from the same origin.
-  const API_BASE_URL = "";
+  // The Node.js server serves both the frontend and /api on the same origin.
+  // Keep the browser on localhost; server.cjs intentionally rejects remote origins.
   const GITHUB_MCP_SERVER_NAME = "github";
   const STATUS_TIMEOUT_MS = 8000;
   const LOGIN_POLL_INTERVAL_MS = 2500;
   const LOGIN_MAX_WAIT_MS = 8 * 60 * 1000;
-
-  const HOSTED_ON_GITHUB_PAGES =
-    window.location.hostname === "github.io" ||
-    window.location.hostname.endsWith(".github.io");
-  const API_BASE = API_BASE_URL.trim().replace(/\/+$/, "");
-  const BACKEND_CONFIGURED = Boolean(API_BASE) || !HOSTED_ON_GITHUB_PAGES;
+  const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost"]);
+  const IS_LOCAL_NODE_ORIGIN =
+    window.location.protocol === "http:" &&
+    LOCAL_HOSTS.has(window.location.hostname);
+  const BACKEND_CONFIGURED = IS_LOCAL_NODE_ORIGIN;
 
   const API = Object.freeze({
+    health: "/api/health",
     status: "/api/codex/status",
     login: "/api/codex/auth/login",
     loginStatus: (loginId) => `/api/codex/auth/login/${encodeURIComponent(loginId)}`,
@@ -222,8 +222,7 @@
   }
 
   function apiUrl(path) {
-    const base = API_BASE || window.location.origin;
-    return new URL(path.replace(/^\//, ""), `${base}/`).toString();
+    return new URL(path.replace(/^\//, ""), window.location.origin).toString();
   }
 
   async function readResponseError(response) {
@@ -243,7 +242,7 @@
   async function apiRequest(path, options = {}) {
     if (!BACKEND_CONFIGURED) {
       throw new Error(
-        "O backend não está configurado. Defina API_BASE_URL no início de script.js para o endereço HTTPS da API ASP.NET Core."
+        "Abra o Codex Web pelo servidor Node.js em http://127.0.0.1:3210. Não use o GitHub Pages nem abra index.html diretamente."
       );
     }
 
@@ -257,7 +256,7 @@
 
     const response = await fetch(apiUrl(path), {
       ...request,
-      credentials: "include",
+      credentials: "same-origin",
       cache: "no-store",
       headers
     });
@@ -295,7 +294,7 @@
     setButtonAvailable(
       elements.send,
       available,
-      state.busy ? "Codex está trabalhando" : "Conecte e autentique o backend do Codex primeiro"
+      state.busy ? "Codex está trabalhando" : "Inicie o servidor Node.js e conecte sua conta ChatGPT"
     );
     if (elements.send) {
       elements.send.setAttribute("aria-label", available ? "Enviar mensagem para Codex" : "Codex indisponível");
@@ -303,7 +302,7 @@
     if (elements.prompt) {
       elements.prompt.placeholder = state.backendReady
         ? "Ask Codex to work on your project..."
-        : "Digite uma tarefa — conecte o backend para enviar ao Codex";
+        : "Digite uma tarefa — inicie o servidor Node.js para enviar ao Codex";
     }
     // Suggested cards remain clickable offline: they fill the prompt.
   }
@@ -350,7 +349,7 @@
     const menu = createElement("div", "codex-popover");
     menu.setAttribute("role", "menu");
     menu.setAttribute("aria-label", title);
-    menu.appendChild(createElement("div", "codex-popover-label", title));
+        menu.appendChild(createElement("div", "codex-popover-label", title));
 
     for (const option of options) {
       const button = createElement("button", "", option.label);
@@ -378,8 +377,8 @@
   function configureModelSelectors(rawModels) {
     state.models = normalizeModels(rawModels);
     if (!state.models.length) {
-      setButtonAvailable(elements.modelSelector, false, "O backend não forneceu modelos.");
-      setButtonAvailable(elements.reasoningSelector, false, "O backend não forneceu níveis de raciocínio.");
+      setButtonAvailable(elements.modelSelector, false, "O Codex App Server não forneceu modelos.");
+      setButtonAvailable(elements.reasoningSelector, false, "O Codex App Server não forneceu níveis de raciocínio.");
       return;
     }
 
@@ -469,7 +468,7 @@
       state.backendReady = false;
       state.capabilities = { chat: false, interrupt: false };
       setRuntimeStatus(
-        "Frontend publicado. Configure o endereço do backend ASP.NET Core em API_BASE_URL para conectar ao Codex.",
+        "Node.js não detectado nesta origem. Execute `node server.cjs` e abra http://127.0.0.1:3210. O GitHub Pages hospeda apenas a interface estática.",
         "offline"
       );
       updateAccount({ codex: { authenticated: false, account: null } });
@@ -478,18 +477,44 @@
       return null;
     }
 
-    setRuntimeStatus("Checking Codex Web backend...", "checking");
+    setRuntimeStatus("Verificando o servidor Node.js do Codex Web...", "checking");
     setSendAvailability();
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), STATUS_TIMEOUT_MS);
 
     try {
-      const payload = await apiJson(API.status, { signal: controller.signal });
-      if (!payload || typeof payload !== "object") {
-        throw new Error("O backend retornou um status inválido.");
+      // First confirm that this exact Node.js service is serving the page.
+      const health = await apiJson(API.health, { signal: controller.signal });
+      if (health?.ok !== true || health?.service !== "codex-web-node-backend") {
+        throw new Error("A origem respondeu, mas não é o servidor Node.js esperado do Codex Web.");
       }
 
       state.backendReachable = true;
+
+      // The HTTP server can be healthy even when Codex CLI/App Server is not
+      // installed, not logged in, or failed to initialize. Keep those states
+      // separate so the UI does not incorrectly report Node.js as offline.
+      let payload;
+      try {
+        payload = await apiJson(API.status, { signal: controller.signal });
+      } catch (error) {
+        state.backendReady = false;
+        state.capabilities = { chat: false, interrupt: false };
+        updateAccount({ codex: { authenticated: false, account: null } });
+        configureModelSelectors([]);
+        const message = error.name === "AbortError"
+          ? "O Node.js está ativo, mas a consulta ao Codex App Server expirou."
+          : `Node.js está ativo, mas não conseguiu consultar o Codex App Server: ${error.message}`;
+        setRuntimeStatus(message, "warning");
+        setSendAvailability();
+        if (!silent) showToast(message, "error");
+        return null;
+      }
+
+      if (!payload || typeof payload !== "object") {
+        throw new Error("O Node.js retornou um status do Codex inválido.");
+      }
+
       state.backendReady = isCodexReady(payload);
       state.capabilities = {
         chat: payload.capabilities?.chat === true,
@@ -499,17 +524,16 @@
 
       if (state.backendReady) {
         configureModelSelectors(payload.models);
-        const version = payload.codex?.version ? ` · ${payload.codex.version}` : "";
-        setRuntimeStatus(`Codex connected${version}.`, "ready");
+        setRuntimeStatus("Node.js conectado · Codex pronto para receber tarefas.", "ready");
       } else {
         configureModelSelectors([]);
         const codex = payload.codex || {};
         if (codex.available === true && !state.authenticated) {
-          setRuntimeStatus("Codex está disponível, mas ainda precisa de login.", "warning");
+          setRuntimeStatus("Node.js ativo. Faça login na sua conta ChatGPT para habilitar o Codex.", "warning");
         } else if (payload.ready === true && payload.capabilities?.chat !== true) {
-          setRuntimeStatus("Backend ativo, mas a capacidade de chat não está habilitada.", "warning");
+          setRuntimeStatus("Node.js ativo, mas o Codex App Server não disponibilizou a capacidade de chat.", "warning");
         } else {
-          setRuntimeStatus("Backend alcançável; Codex ainda não está pronto.", "warning");
+          setRuntimeStatus("Node.js ativo; aguardando o Codex App Server ficar pronto.", "warning");
         }
       }
 
@@ -520,8 +544,8 @@
       state.backendReady = false;
       state.capabilities = { chat: false, interrupt: false };
       const message = error.name === "AbortError"
-        ? "A verificação do backend expirou."
-        : `Backend indisponível: ${error.message}`;
+        ? "A verificação do servidor Node.js expirou."
+        : `Servidor Node.js indisponível: ${error.message}`;
       setRuntimeStatus(message, "offline");
       updateAccount({ codex: { authenticated: false, account: null } });
       configureModelSelectors([]);
@@ -675,7 +699,7 @@
     const article = createElement("article", `message message-${role}`);
     article.dataset.role = role;
     const content = createElement("div", "message-content");
-    const textNode = createElement("div", "message-text", text);
+        const textNode = createElement("div", "message-text", text);
     content.appendChild(textNode);
     article.appendChild(content);
     elements.messages.appendChild(article);
@@ -696,8 +720,9 @@
 
   function clearMessageStatus(message) {
     $(".message-status", message?.content || document.createElement("div"))?.remove();
-      }
-    function appendDiff(message, diff) {
+  }
+
+  function appendDiff(message, diff) {
     if (!message?.content || typeof diff !== "string" || !diff.trim()) return;
     const details = createElement("details", "message-diff");
     details.appendChild(createElement("summary", "", "File changes (diff)"));
@@ -783,7 +808,7 @@
         break;
       }
       case "error": {
-        const error = params.message || params.error?.message || "O backend informou um erro.";
+        const error = params.message || params.error?.message || "O servidor Node.js informou um erro do Codex.";
         outcome.failure = error;
         setMessageStatus(message, error, true);
         break;
@@ -828,7 +853,7 @@
   }
 
   async function consumeEventStream(response) {
-    if (!response.body) throw new Error("O backend retornou um stream vazio.");
+    if (!response.body) throw new Error("O servidor Node.js retornou um stream vazio.");
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
     let buffer = "";
@@ -886,7 +911,7 @@
     event.preventDefault();
     if (state.busy) return;
     if (!state.backendReady) {
-      showToast("O Codex não está conectado. Configure e inicie o backend antes de enviar.", "error");
+      showToast("O Codex não está conectado. Inicie o servidor Node.js e autentique sua conta antes de enviar.", "error");
       return;
     }
 
@@ -1023,8 +1048,7 @@
       // below remains the source of truth; don't hide the original result.
       console.warn("Could not cancel Codex login:", error.message);
     }
-      }
-  
+          }
     async function pollCodexLogin(dialogState, loginId) {
     if (!state.login || state.login.loginId !== loginId) return;
     if (Date.now() - state.loginStartedAt > LOGIN_MAX_WAIT_MS) {
@@ -1161,7 +1185,7 @@
       options.push({ label: "Sign out", onChoose: logoutCodex });
     } else {
       options.push({ label: "Sign in with ChatGPT", onChoose: beginCodexLogin });
-      options.push({ label: "Check backend", onChoose: () => refreshBackendStatus({ silent: false }) });
+      options.push({ label: "Check Node.js server", onChoose: () => refreshBackendStatus({ silent: false }) });
     }
     openPopover(elements.accountMenu, "Codex account", options);
   }
@@ -1200,7 +1224,7 @@
     const status = target.status || $(".view-empty p", elements.secondaryContent)?.nextElementSibling;
     const actions = target.actions || status?.nextElementSibling;
     if (!state.backendReachable) {
-      if (status) status.textContent = "Conecte o backend Codex para consultar servidores MCP.";
+      if (status) status.textContent = "Inicie o servidor Node.js para consultar servidores MCP.";
       return null;
     }
     if (status) status.textContent = "Consultando servidores MCP...";
@@ -1212,7 +1236,7 @@
         : (Array.isArray(payload?.data) ? payload.data : []);
       state.githubServer = findGitHubServer(servers);
       if (!state.githubServer) {
-        if (status) status.textContent = "O servidor MCP do GitHub não está configurado no backend do Codex. Configure-o no ambiente onde o App Server é executado.";
+        if (status) status.textContent = "O servidor MCP do GitHub não está configurado no ambiente local do Codex App Server.";
         return null;
       }
 
@@ -1318,8 +1342,9 @@
       () => pollGitHubOAuth(serverName, loginId),
       LOGIN_POLL_INTERVAL_MS
     );
-        }
-    function attachEventHandlers() {
+  }
+
+  function attachEventHandlers() {
     elements.composer?.addEventListener("submit", submitChat);
     elements.prompt?.addEventListener("input", resizePrompt);
     elements.prompt?.addEventListener("keydown", (event) => {
@@ -1331,7 +1356,7 @@
     elements.send?.addEventListener("click", () => {
       // The form submit handler is authoritative. This listener also gives
       // disabled-state feedback on browsers that don't submit disabled forms.
-      if (!state.backendReady) showToast("Conecte o backend do Codex antes de enviar.");
+      if (!state.backendReady) showToast("Inicie o servidor Node.js antes de enviar.");
     });
     elements.stop?.addEventListener("click", stopCurrentTurn);
     elements.accountMenu?.addEventListener("click", openAccountMenu);
@@ -1385,7 +1410,7 @@
     updateNavigation("new-thread");
     updateThreadList(null);
     setSendAvailability();
-    setRuntimeStatus("Checking Codex Web backend...", "checking");
+    setRuntimeStatus("Verificando o servidor Node.js do Codex Web...", "checking");
     await refreshBackendStatus({ silent: true });
   }
 
