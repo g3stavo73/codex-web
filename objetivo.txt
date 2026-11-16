@@ -1,1 +1,482 @@
 
+PROJETO: CODEX WEB
+REPOSITORIO: g3stavo73/codex-web
+BRANCH PRINCIPAL: main
+
+==================================================
+1. OBJETIVO PRINCIPAL
+==================================================
+
+Construir uma aplicação web capaz de utilizar o Codex real,
+por meio do Codex App Server.
+
+O objetivo não é criar apenas uma interface visual que
+simula o ChatGPT ou o Codex.
+
+Queremos construir uma aplicação funcional na qual o usuário
+possa enviar tarefas para o Codex, acompanhar sua execução,
+receber respostas, trabalhar com projetos e utilizar
+ferramentas de desenvolvimento.
+
+O núcleo do Codex Web deve funcionar antes de investirmos
+em recursos secundários.
+
+A aplicação deverá evoluir para oferecer uma experiência
+de desenvolvimento integrada, com conversas, projetos,
+arquivos, terminal, Git, agentes e plugins.
+
+==================================================
+2. ARQUITETURA PRINCIPAL
+==================================================
+
+A arquitetura utiliza três tecnologias principais:
+
+C# / ASP.NET CORE:
+- É o cérebro da aplicação.
+- Controla as regras de negócio.
+- Gerencia sessões e tarefas.
+- Coordena os serviços.
+- Controla a comunicação entre os componentes.
+- Gerencia a autenticação e as operações do backend.
+
+PYTHON:
+- Atua como camada auxiliar de integração.
+- Auxilia na comunicação com componentes externos.
+- Trabalha com contexto de repositórios.
+- Gerencia integrações e MCP.
+- É coordenado pelo backend C#.
+
+CODEX APP SERVER:
+- É o runtime responsável pela execução real do Codex.
+- Gerencia threads e turns.
+- Recebe tarefas.
+- Executa o trabalho solicitado.
+- Emite eventos de execução.
+- Fornece os resultados.
+
+JAVASCRIPT:
+- Controla a interface do usuário.
+- Manipula o DOM.
+- Envia requisições para a API C#.
+- Recebe e apresenta as respostas.
+- Não deve conter regras de negócio.
+
+==================================================
+3. REGRAS ARQUITETURAIS
+==================================================
+
+1. C# é a tecnologia principal do backend.
+
+2. Python não substitui o backend C#.
+
+3. O Codex App Server é o runtime real do Codex.
+
+4. JavaScript não deve implementar a lógica principal
+   da aplicação.
+
+5. Não colocar credenciais, tokens ou chaves de API
+   no frontend.
+
+6. Não implementar comunicação direta do navegador
+   com o Codex App Server.
+
+7. Evitar duplicação de responsabilidades.
+
+8. Não criar abstrações sem necessidade.
+
+9. Toda implementação deve considerar a compatibilidade
+   com os arquivos já existentes.
+
+10. Não fingir que uma funcionalidade está implementada
+    quando ainda não está.
+
+==================================================
+4. ESTRUTURA DO REPOSITÓRIO
+==================================================
+
+codex-web/
+|
+|-- index.html
+|-- style.css
+|-- script.js
+|
+|-- objetivo.txt
+|
+|-- backend/
+|   |
+|   |-- CodexWeb.Api/
+|   |   |
+|   |   |-- Features/
+|   |   |   |-- Auth/
+|   |   |   |-- Chat/
+|   |   |   |-- Projects/
+|   |   |   |-- Files/
+|   |   |   |-- Terminal/
+|   |   |   |-- Git/
+|   |   |   |-- Agents/
+|   |   |   |-- Plugins/
+|   |   |   |-- History/
+|   |   |   |-- Settings/
+|   |   |
+|   |   |-- Core/
+|   |   |   |-- Entities/
+|   |   |   |-- Interfaces/
+|   |   |   |-- Exceptions/
+|   |   |
+|   |   |-- Infrastructure/
+|   |   |   |-- Persistence/
+|   |   |   |-- Security/
+|   |   |   |-- Configuration/
+|   |   |
+|   |   |-- Services/
+|   |   |
+|   |   |-- Contracts/
+|   |
+|   |-- py/
+|       |-- apis/
+|       |-- auth/
+|       |-- communication/
+|       |-- repository/
+|       |-- context/
+|       |-- rpc/
+|       |-- events/
+|       |-- mcp/
+|       |-- integrations/
+|       |-- shared/
+|
+|-- plugins/
+|   |-- manifests/
+|   |-- official/
+|   |-- community/
+|   |-- installed/
+|
+|-- tests/
+|   |-- backend/
+|   |-- python/
+|   |-- integration/
+|   |-- end-to-end/
+|
+|-- data/
+    |-- projects/
+    |-- conversations/
+    |-- cache/
+    |-- logs/
+
+==================================================
+5. FUNCIONAMENTO DO CODEX
+==================================================
+
+O conceito central utiliza três elementos:
+
+SESSION:
+Representa uma conversa no Codex Web.
+
+THREAD:
+Representa a conversa correspondente no Codex App Server.
+
+TASK:
+Representa uma solicitação individual do usuário.
+
+TURN:
+Representa a execução correspondente à tarefa no Codex.
+
+Relação:
+
+CodexSession -> Codex Thread
+CodexTask -> Codex Turn
+
+Uma sessão pode conter várias tarefas.
+Cada tarefa pertence a uma sessão.
+Cada tarefa executa um turn dentro da thread
+correspondente.
+
+O backend deve preservar essa relação.
+
+==================================================
+6. ENTIDADES E INTERFACES
+==================================================
+
+ENTIDADES:
+
+CodexSession.cs
+- Identificador interno.
+- Título.
+- Identificador da thread do Codex.
+- Estado da sessão.
+- Datas de criação e atualização.
+- Operações de gerenciamento da sessão.
+
+CodexTask.cs
+- Identificador interno.
+- Identificador da sessão.
+- Prompt.
+- Identificador do turn do Codex.
+- Estado da tarefa.
+- Motivo de falha.
+- Datas de execução.
+
+INTERFACES:
+
+ICodexRuntime.cs
+- Inicializar o runtime.
+- Criar threads.
+- Retomar threads.
+- Iniciar turns.
+- Solicitar interrupções.
+- Ler eventos emitidos pelo runtime.
+
+ITaskExecutor.cs
+- Coordenar o início das tarefas.
+- Coordenar solicitações de interrupção.
+- Atualizar o ciclo de vida das tarefas.
+
+As interfaces devem manter responsabilidades
+separadas e não duplicar a implementação
+da comunicação com o Codex.
+
+==================================================
+7. EXCEPTIONS
+==================================================
+
+A pasta Core/Exceptions será responsável
+pelas exceções específicas do domínio.
+
+Estrutura planejada:
+
+DomainException.cs
+SessionNotFoundException.cs
+TaskNotFoundException.cs
+InvalidSessionStateException.cs
+InvalidTaskStateException.cs
+CodexRuntimeException.cs
+CodexConnectionException.cs
+CodexTurnException.cs
+
+As exceções devem representar condições reais
+que possam ser tratadas pelo backend.
+
+Evitar criar exceções desnecessárias.
+
+==================================================
+8. CODEX APP SERVER
+==================================================
+
+A integração deve respeitar o protocolo oficial
+do Codex App Server.
+
+Conceitos importantes:
+
+- initialize
+- initialized
+- account/read
+- account/login/start
+- thread/start
+- thread/resume
+- turn/start
+- turn/interrupt
+- turn/completed
+- item/agentMessage/delta
+
+A comunicação utiliza JSON-RPC.
+
+O backend deverá lidar com:
+- Inicialização.
+- Comunicação.
+- Identificadores de threads e turns.
+- Notificações.
+- Eventos incrementais.
+- Erros.
+- Interrupções.
+- Encerramento da conexão.
+
+Não inventar métodos ou parâmetros.
+Consultar a documentação oficial antes de implementar
+operações do protocolo.
+
+Documentação:
+https://learn.chatgpt.com/docs/app-server
+
+Autenticação:
+https://learn.chatgpt.com/docs/auth?surface=cli
+
+==================================================
+9. AUTENTICAÇÃO
+==================================================
+
+A autenticação será implementada posteriormente.
+
+Objetivo:
+- Login com ChatGPT.
+- Utilizar o fluxo de autenticação suportado
+  pelo próprio Codex.
+- Consultar a conta autenticada.
+- Consultar informações de plano quando disponíveis.
+- Manter credenciais protegidas no backend.
+
+Nunca expor tokens ou credenciais no JavaScript.
+
+Não implementar uma autenticação fictícia.
+
+==================================================
+10. FUNCIONALIDADES FUTURAS
+==================================================
+
+CHAT:
+- Conversas.
+- Histórico.
+- Respostas em streaming.
+- Continuação de conversas.
+
+PROJETOS:
+- Gerenciamento de projetos.
+- Contexto de repositórios.
+- Arquivos.
+- Organização do trabalho.
+
+DESENVOLVIMENTO:
+- Terminal.
+- Git.
+- Alterações em arquivos.
+- Execução de tarefas.
+
+AGENTES:
+- Gerenciamento de agentes.
+- Distribuição de tarefas.
+- Coordenação de execuções.
+
+PLUGINS:
+- Plugins oficiais.
+- Plugins da comunidade.
+- Instalação e gerenciamento.
+- Integrações.
+
+CONFIGURAÇÕES:
+- Modelos.
+- Preferências.
+- Configurações de execução.
+- Conta.
+
+Essas funcionalidades não devem atrasar a implementação
+do núcleo principal.
+
+==================================================
+11. FRONTEND
+==================================================
+
+Arquivos na raiz:
+
+index.html
+style.css
+script.js
+
+O frontend deve apresentar uma interface moderna,
+inspirada na experiência real do Codex.
+
+O JavaScript deve:
+- Controlar a interface.
+- Enviar prompts para o backend.
+- Receber respostas.
+- Atualizar mensagens.
+- Apresentar estados de execução.
+- Gerenciar interações visuais.
+
+A comunicação deve acontecer por meio das APIs
+disponibilizadas pelo backend C#.
+
+==================================================
+12. HOSPEDAGEM E EXECUÇÃO
+==================================================
+
+O GitHub Pages é utilizado para hospedar
+o frontend estático.
+
+IMPORTANTE:
+
+GitHub Pages não executa:
+- ASP.NET Core.
+- Python como backend.
+- Codex App Server.
+
+O backend precisará de um ambiente de execução
+próprio, local ou hospedado.
+
+A decisão de hospedagem será tratada posteriormente.
+
+Neste momento, a prioridade é construir
+a arquitetura e o código-fonte do núcleo.
+
+==================================================
+13. METODOLOGIA DE DESENVOLVIMENTO
+==================================================
+
+O desenvolvimento será feito arquivo por arquivo.
+
+Para cada arquivo:
+
+1. Definir sua responsabilidade.
+2. Analisar sua relação com a arquitetura.
+3. Pesquisar documentação quando necessário.
+4. Desenvolver a implementação completa.
+5. Verificar compatibilidade com os arquivos anteriores.
+6. Identificar possíveis problemas.
+7. Testar quando houver ambiente disponível.
+8. Só então avançar para o próximo arquivo.
+
+Não criar arquivos apenas para preencher pastas.
+
+Não deixar erros conhecidos sem explicação.
+
+Não avançar sem considerar as dependências.
+
+O trabalho será realizado principalmente pelo
+site do GitHub, utilizando a interface web.
+
+Não presumir que um arquivo foi publicado
+sem confirmação.
+
+==================================================
+14. PRIORIDADES
+==================================================
+
+PRIORIDADE 1:
+Construir o núcleo funcional do Codex Web.
+
+PRIORIDADE 2:
+Integrar o C# ao Codex App Server.
+
+PRIORIDADE 3:
+Implementar gerenciamento de sessões e tarefas.
+
+PRIORIDADE 4:
+Implementar recebimento e distribuição de eventos.
+
+PRIORIDADE 5:
+Implementar comunicação entre frontend e backend.
+
+PRIORIDADE 6:
+Implementar autenticação.
+
+PRIORIDADE 7:
+Expandir funcionalidades de desenvolvimento.
+
+PRIORIDADE 8:
+Implementar plugins, agentes e integrações.
+
+==================================================
+15. PRINCÍPIO FUNDAMENTAL
+==================================================
+
+O CODEX WEB NÃO DEVE SER APENAS UMA CÓPIA VISUAL
+DO CODEX.
+
+ELE DEVE SER UMA APLICAÇÃO FUNCIONAL QUE UTILIZA
+O CODEX REAL COMO MOTOR DE EXECUÇÃO.
+
+A prioridade é construir uma arquitetura sólida,
+coerente, extensível e funcional.
+
+Primeiro fazer o núcleo existir.
+Depois expandir o ecossistema.
+
+FIM DO DOCUMENTO.
+
