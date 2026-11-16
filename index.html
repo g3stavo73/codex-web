@@ -1,949 +1,204 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#171717">
-  <meta name="description" content="Codex Web — your coding agent workspace.">
+  <meta name="description" content="Codex Web — a workspace for working with Codex.">
   <title>Codex Web</title>
-
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
-
 <body>
-  <!-- SVG icon library -->
-  <svg xmlns="http://www.w3.org/2000/svg" class="icon-library">
-
+  <!-- Small local SVG icon set. No external icon service is required. -->
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <symbol id="i-codex" viewBox="0 0 24 24">
-      <path d="M12 2.8c1.7 0 2.8 1.1 3.1 2.7 1.6-.7 3.1-.2 4 1.2.9 1.5.5 2.9-.7 4.1 1.5.6 2.3 2 2 3.7-.3 1.7-1.5 2.5-3.1 2.6.1 1.7-.8 2.9-2.4 3.3-1.7.4-2.9-.4-3.6-1.8-1 1.3-2.5 1.6-3.9.7-1.4-.9-1.7-2.4-1-3.9-1.7 0-2.9-1-3.1-2.7-.2-1.7.7-2.9 2.3-3.4-1-1.4-.8-2.9.5-4.1 1.3-1.1 2.8-1.1 4.1 0 .1-1.5.8-2.4 1.8-2.4Z"
-        fill="none" stroke="currentColor" stroke-width="1.4"
-        stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12 2.8c1.7 0 2.8 1.1 3.1 2.7 1.6-.7 3.1-.2 4 1.2.9 1.5.5 2.9-.7 4.1 1.5.6 2.3 2 2 3.7-.3 1.7-1.5 2.5-3.1 2.6.1 1.7-.8 2.9-2.4 3.3-1.7.4-2.9-.4-3.6-1.8-1 1.3-2.5 1.6-3.9.7-1.4-.9-1.7-2.4-1-3.9-1.7 0-2.9-1-3.1-2.7-.2-1.7.7-2.9 2.3-3.4-1-1.4-.8-2.9.5-4.1 1.3-1.1 2.8-1.1 4.1 0 .1-1.5.8-2.4 1.8-2.4Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
       <circle cx="12" cy="12" r="2.1" fill="currentColor"/>
     </symbol>
-
-    <symbol id="i-plus" viewBox="0 0 24 24">
-      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor"
-        stroke-width="1.7" stroke-linecap="round"/>
-    </symbol>
-
-    <symbol id="i-chevron" viewBox="0 0 24 24">
-      <path d="m7 10 5 5 5-5" fill="none" stroke="currentColor"
-        stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-
-    <symbol id="i-chevron-left" viewBox="0 0 24 24">
-      <path d="m14 5-7 7 7 7" fill="none" stroke="currentColor"
-        stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-
-    <symbol id="i-panel" viewBox="0 0 24 24">
-      <rect x="3.5" y="4" width="17" height="16" rx="2.5"
-        fill="none" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M9 4v16" fill="none" stroke="currentColor" stroke-width="1.5"/>
-    </symbol>
-
-    <symbol id="i-clock" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="8.5" fill="none"
-        stroke="currentColor" stroke-width="1.5"/>
-      <path d="M12 7v5l3 2" fill="none" stroke="currentColor"
-        stroke-width="1.5" stroke-linecap="round"/>
-    </symbol>
-
-    <symbol id="i-calendar" viewBox="0 0 24 24">
-      <rect x="3.5" y="5.5" width="17" height="15" rx="2"
-        fill="none" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17"
-        fill="none" stroke="currentColor" stroke-width="1.5"
-        stroke-linecap="round"/>
-    </symbol>
-
-    <symbol id="i-sparkles" viewBox="0 0 24 24">
-      <path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"
-        fill="none" stroke="currentColor" stroke-width="1.4"
-        stroke-linejoin="round"/>
-      <path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"
-        fill="none" stroke="currentColor" stroke-width="1.2"/>
-    </symbol>
-
-    <symbol id="i-folder" viewBox="0 0 24 24">
-      <path d="M3.5 7.5a2 2 0 0 1 2-2h5l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-10Z"
-        fill="none" stroke="currentColor" stroke-width="1.5"
-        stroke-linejoin="round"/>
-    </symbol>
-
-    <symbol id="i-search" viewBox="0 0 24 24">
-      <circle cx="10.8" cy="10.8" r="6.8" fill="none"
-        stroke="currentColor" stroke-width="1.5"/>
-      <path d="m16 16 4.5 4.5" fill="none" stroke="currentColor"
-        stroke-width="1.5" stroke-linecap="round"/>
-    </symbol>
-
-    <symbol id="i-settings" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="3" fill="none"
-        stroke="currentColor" stroke-width="1.5"/>
-      <path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l1.3-1-1.8-3.1-1.6.6a7.5 7.5 0 0 0-2.6-1.5L14.4 4h-4.8l-.3 1.5a7.5 7.5 0 0 0-2.6 1.5l-1.6-.6-1.8 3.1 1.3 1a7.8 7.8 0 0 0 0 3l-1.3 1 1.8 3.1 1.6-.6a7.5 7.5 0 0 0 2.6 1.5l.3 1.5h4.8l.3-1.5a7.5 7.5 0 0 0 2.6-1.5l1.6.6 1.8-3.1-1.3-1Z"
-        fill="none" stroke="currentColor" stroke-width="1.3"
-        stroke-linejoin="round"/>
-    </symbol>
-
-    <symbol id="i-file" viewBox="0 0 24 24">
-      <path d="M6 3.5h8l4 4v13H6z" fill="none"
-        stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-      <path d="M14 3.5v4h4M9 13h6M9 16.5h6"
-        fill="none" stroke="currentColor" stroke-width="1.4"
-        stroke-linecap="round"/>
-    </symbol>
-
-    <symbol id="i-terminal" viewBox="0 0 24 24">
-      <rect x="3" y="4" width="18" height="16" rx="2.5"
-        fill="none" stroke="currentColor" stroke-width="1.5"/>
-      <path d="m7 9 3 3-3 3m6 0h4" fill="none"
-        stroke="currentColor" stroke-width="1.5"
-        stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-
-    <symbol id="i-git" viewBox="0 0 24 24">
-      <path d="M7 4v12a3 3 0 0 0 3 3h4a3 3 0 0 0 3-3V8"
-        fill="none" stroke="currentColor" stroke-width="1.5"/>
-      <circle cx="7" cy="4" r="2" fill="none"
-        stroke="currentColor" stroke-width="1.5"/>
-      <circle cx="17" cy="8" r="2" fill="none"
-        stroke="currentColor" stroke-width="1.5"/>
-      <circle cx="14" cy="19" r="2" fill="none"
-        stroke="currentColor" stroke-width="1.5"/>
-    </symbol>
-
-    <symbol id="i-attach" viewBox="0 0 24 24">
-      <path d="m8 12.5 6.8-6.8a3.2 3.2 0 0 1 4.5 4.5l-8.5 8.5a5 5 0 0 1-7.1-7.1l8.1-8.1"
-        fill="none" stroke="currentColor" stroke-width="1.5"
-        stroke-linecap="round"/>
-    </symbol>
-
-    <symbol id="i-send" viewBox="0 0 24 24">
-      <path d="M12 19V5m-6 6 6-6 6 6" fill="none"
-        stroke="currentColor" stroke-width="1.8"
-        stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-
-    <symbol id="i-more" viewBox="0 0 24 24">
-      <circle cx="5" cy="12" r="1.2" fill="currentColor"/>
-      <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
-      <circle cx="19" cy="12" r="1.2" fill="currentColor"/>
-    </symbol>
-
-    <symbol id="i-check" viewBox="0 0 24 24">
-      <path d="m5 12 4.5 4.5L19 7" fill="none"
-        stroke="currentColor" stroke-width="1.8"
-        stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-
-    <!-- Construction / Coming soon icon -->
-    <symbol id="i-construction" viewBox="0 0 24 24">
-      <path d="M4 20h16M6 20l5-16h2l5 16M9 12h6M7.5 16h9"
-        fill="none" stroke="currentColor" stroke-width="1.6"
-        stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-
-    <symbol id="i-github" viewBox="0 0 24 24">
-      <path d="M9 19c-4.3 1.3-4.3-2.2-6-2.5M15 21v-3.5a3 3 0 0 0-.8-2.3c2.7-.3 5.5-1.3 5.5-6A4.7 4.7 0 0 0 18.4 6a4.3 4.3 0 0 0-.1-3S17.3 2.7 15 4.2a12.3 12.3 0 0 0-6 0C6.7 2.7 5.7 3 5.7 3a4.3 4.3 0 0 0-.1 3 4.7 4.7 0 0 0-1.3 3.3c0 4.7 2.8 5.7 5.5 6A3 3 0 0 0 9 17.5V21"
-        fill="none" stroke="currentColor" stroke-width="1.5"
-        stroke-linecap="round" stroke-linejoin="round"/>
-    </symbol>
-
+    <symbol id="i-panel" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M9 4v16" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7.5a2 2 0 0 1 2-2h5l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-10Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-checklist" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M3.5 6l1.5 1.5L7 5.5M3.5 12l1.5 1.5L7 11.5M3.5 18l1.5 1.5L7 17.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-git" viewBox="0 0 24 24"><circle cx="6" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="19" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="5" r="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 7v5a7 7 0 0 0 7 7h3M8 5h8M18 7v10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 3.5h8l4 4v13H6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M14 3.5v4h4M9 13h6M9 16.5h6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m7 9 3 3-3 3m5 0h5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5.5" width="17" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M7.5 3.5v4M16.5 3.5v4M3.5 10h17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z" fill="none" stroke="currentColor" stroke-width="1.2"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M19.4 13.5a7.8 7.8 0 0 0 0-3l1.3-1-1.8-3.1-1.6.6a7.5 7.5 0 0 0-2.6-1.5L14.4 4h-4.8l-.3 1.5a7.5 7.5 0 0 0-2.6 1.5l-1.6-.6-1.8 3.1 1.3 1a7.8 7.8 0 0 0 0 3l-1.3 1 1.8 3.1 1.6-.6a7.5 7.5 0 0 0 2.6 1.5l.3 1.5h4.8l.3-1.5a7.5 7.5 0 0 0 2.6-1.5l1.6.6 1.8-3.1-1.3-1Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m21 3-7.5 18-3.7-7.8L2 9.5 21 3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9.8 13.2 21 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="m16 16 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="19" cy="12" r="1.3" fill="currentColor"/></symbol>
   </svg>
 
   <div class="app-shell">
-
-    <!-- Left sidebar -->
-    <aside class="sidebar" id="sidebar">
-
+    <aside class="sidebar" id="sidebar" aria-label="Main sidebar">
       <div class="sidebar-header">
-        <a class="brand" href="#" aria-label="Codex Web home">
-          <svg class="brand-icon"><use href="#i-codex"/></svg>
-          <span>Codex</span>
+        <a class="brand" href="#new-thread" data-page="new-thread" aria-label="Codex Web home">
+          <svg class="brand-icon"><use href="#i-codex"></use></svg>
+          <span>Codex Web</span>
         </a>
-
-        <button class="icon-button sidebar-toggle"
-          type="button" aria-label="Collapse sidebar"
-          title="Collapse sidebar">
-          <svg class="icon"><use href="#i-panel"/></svg>
+        <button class="icon-button sidebar-toggle" type="button" aria-label="Collapse sidebar" title="Collapse sidebar">
+          <svg class="icon"><use href="#i-panel"></use></svg>
         </button>
       </div>
 
-      <nav class="sidebar-navigation" aria-label="Main navigation">
-
-        <a class="navigation-item active" href="#new-thread"
-          data-page="new-thread" aria-current="page">
-          <span class="navigation-icon">
-            <svg class="icon"><use href="#i-plus"/></svg>
-          </span>
+      <nav class="sidebar-navigation" aria-label="Workspace navigation">
+        <a class="navigation-item active" href="#new-thread" data-page="new-thread" aria-current="page">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-plus"></use></svg></span>
           <span class="navigation-label">New thread</span>
-          <kbd>⌘ K</kbd>
         </a>
-
-        <a class="navigation-item is-coming-soon"
-          href="#automations" data-page="automations"
-          data-coming-soon="true" aria-disabled="true"
-          tabindex="-1" title="Coming soon">
-          <span class="navigation-icon">
-            <svg class="icon"><use href="#i-calendar"/></svg>
-          </span>
+        <a class="navigation-item" href="#tasks" data-page="tasks">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-checklist"></use></svg></span>
+          <span class="navigation-label">Tasks</span>
+        </a>
+        <a class="navigation-item" href="#history" data-page="history">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-clock"></use></svg></span>
+          <span class="navigation-label">History</span>
+        </a>
+        <a class="navigation-item" href="#projects" data-page="projects">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-folder"></use></svg></span>
+          <span class="navigation-label">Projects</span>
+        </a>
+        <a class="navigation-item" href="#files" data-page="files">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-file"></use></svg></span>
+          <span class="navigation-label">Files</span>
+        </a>
+        <a class="navigation-item" href="#terminal" data-page="terminal">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-terminal"></use></svg></span>
+          <span class="navigation-label">Terminal</span>
+        </a>
+        <a class="navigation-item" href="#git" data-page="git">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-git"></use></svg></span>
+          <span class="navigation-label">Git</span>
+        </a>
+        <a class="navigation-item" href="#agents" data-page="agents">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-sparkles"></use></svg></span>
+          <span class="navigation-label">Agents</span>
+        </a>
+        <a class="navigation-item" href="#automations" data-page="automations">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-calendar"></use></svg></span>
           <span class="navigation-label">Automations</span>
-          <span class="coming-soon-indicator">
-            <svg class="icon"><use href="#i-construction"/></svg>
-            <span>Coming soon...</span>
-          </span>
         </a>
-
-        <a class="navigation-item is-coming-soon"
-          href="#skills" data-page="skills"
-          data-coming-soon="true" aria-disabled="true"
-          tabindex="-1" title="Coming soon">
-          <span class="navigation-icon">
-            <svg class="icon"><use href="#i-sparkles"/></svg>
-          </span>
+        <a class="navigation-item" href="#skills" data-page="skills">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-sparkles"></use></svg></span>
           <span class="navigation-label">Skills</span>
-          <span class="coming-soon-indicator">
-            <svg class="icon"><use href="#i-construction"/></svg>
-            <span>Coming soon...</span>
-          </span>
         </a>
-
-        <a class="navigation-item" href="#plugins"
-          data-page="plugins">
-          <span class="navigation-icon">
-            <svg class="icon"><use href="#i-folder"/></svg>
-          </span>
+        <a class="navigation-item" href="#plugins" data-page="plugins">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-folder"></use></svg></span>
           <span class="navigation-label">Plugins</span>
         </a>
-
       </nav>
 
       <div class="sidebar-divider"></div>
 
-      <!-- Project and thread navigation -->
-      <section class="threads-section">
-
-        <div class="sidebar-section-header">
-          <span>Threads</span>
-
-          <div class="section-actions">
-            <button class="icon-button small is-coming-soon"
-              type="button" aria-label="Search threads"
-              title="Coming soon" disabled
-              data-coming-soon="true">
-              <svg class="icon"><use href="#i-search"/></svg>
-            </button>
-
-            <button class="icon-button small is-coming-soon"
-              type="button" aria-label="Thread options"
-              title="Coming soon" disabled
-              data-coming-soon="true">
-              <svg class="icon"><use href="#i-more"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div class="thread-list" id="thread-list">
-
-          <div class="project-group">
-            <button class="project-item" type="button"
-              aria-expanded="true">
-              <svg class="icon"><use href="#i-folder"/></svg>
-              <span>codex-web</span>
-              <svg class="chevron"><use href="#i-chevron"/></svg>
-            </button>
-
-            <div class="project-threads">
-              <a href="#thread-1" class="thread-item selected">
-                <span class="thread-status"></span>
-                <span class="thread-name">New workspace</span>
-              </a>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="empty-threads" id="empty-threads" hidden>
-          Your threads will appear here.
-        </div>
-
+      <section class="threads-section" aria-label="Threads">
+        <div class="sidebar-section-header"><span>Threads</span></div>
+        <div class="thread-list" id="thread-list"></div>
+        <div class="empty-threads" id="empty-threads" hidden>No saved threads are available yet.</div>
       </section>
 
       <div class="sidebar-spacer"></div>
 
-      <!-- Sidebar footer -->
       <footer class="sidebar-footer">
-
-        <a href="#settings" class="navigation-item"
-          data-page="settings">
-          <span class="navigation-icon">
-            <svg class="icon"><use href="#i-settings"/></svg>
-          </span>
+        <a class="navigation-item" href="#settings" data-page="settings">
+          <span class="navigation-icon"><svg class="icon"><use href="#i-settings"></use></svg></span>
           <span class="navigation-label">Settings</span>
         </a>
-
-        <button class="account-button" type="button"
-          id="account-menu">
-          <span class="account-avatar">G</span>
-
+        <button class="account-button" type="button" id="account-menu" aria-label="Codex account status">
+          <span class="account-avatar" aria-hidden="true">C</span>
           <span class="account-info">
-            <strong>Personal</strong>
-            <small>Local workspace</small>
+            <strong>Checking account</strong>
+            <small>Local Codex workspace</small>
           </span>
-
-          <svg class="icon account-more">
-            <use href="#i-more"/>
-          </svg>
+          <svg class="icon account-more"><use href="#i-more"></use></svg>
         </button>
-
       </footer>
     </aside>
 
-    <!-- Main application area -->
     <main class="main-content">
-
-      <!-- Workspace header -->
       <header class="workspace-header">
-
         <div class="header-left">
-          <button class="icon-button mobile-sidebar-button"
-            type="button" aria-label="Open sidebar">
-            <svg class="icon"><use href="#i-panel"/></svg>
+          <button class="icon-button mobile-sidebar-button" type="button" aria-label="Open sidebar" title="Open sidebar">
+            <svg class="icon"><use href="#i-panel"></use></svg>
           </button>
-
-          <div class="breadcrumbs">
-            <span class="breadcrumb-section">New thread</span>
-          </div>
+          <div class="breadcrumbs"><span class="breadcrumb-section">New thread</span></div>
         </div>
-
-        <div class="header-actions">
-
-          <button class="header-button is-coming-soon"
-            type="button" id="open-project"
-            disabled data-coming-soon="true"
-            title="Coming soon">
-            <svg class="icon"><use href="#i-folder"/></svg>
-            <span>Open</span>
-            <svg class="chevron"><use href="#i-chevron"/></svg>
-            <span class="coming-soon-indicator">
-              <svg class="icon"><use href="#i-construction"/></svg>
-              <span>Coming soon...</span>
-            </span>
-          </button>
-
-          <button class="header-button is-coming-soon"
-            type="button" id="commit-button"
-            disabled data-coming-soon="true"
-            title="Coming soon">
-            <svg class="icon"><use href="#i-git"/></svg>
-            <span>Commit</span>
-            <svg class="chevron"><use href="#i-chevron"/></svg>
-            <span class="coming-soon-indicator">
-              <svg class="icon"><use href="#i-construction"/></svg>
-              <span>Coming soon...</span>
-            </span>
-          </button>
-
-          <div class="header-divider"></div>
-
-          <button class="icon-button is-coming-soon"
-            type="button" aria-label="Files — Coming soon"
-            title="Coming soon" disabled
-            data-coming-soon="true">
-            <svg class="icon"><use href="#i-file"/></svg>
-            <span class="coming-soon-indicator">
-              <svg class="icon"><use href="#i-construction"/></svg>
-              <span>Coming soon...</span>
-            </span>
-          </button>
-
-          <button class="icon-button is-coming-soon"
-            type="button" aria-label="Terminal — Coming soon"
-            title="Coming soon" disabled
-            data-coming-soon="true">
-            <svg class="icon"><use href="#i-terminal"/></svg>
-            <span class="coming-soon-indicator">
-              <svg class="icon"><use href="#i-construction"/></svg>
-              <span>Coming soon...</span>
-            </span>
-          </button>
-
-          <button class="icon-button is-coming-soon"
-            type="button" aria-label="More options — Coming soon"
-            title="Coming soon" disabled
-            data-coming-soon="true">
-            <svg class="icon"><use href="#i-more"/></svg>
-            <span class="coming-soon-indicator">
-              <svg class="icon"><use href="#i-construction"/></svg>
-              <span>Coming soon...</span>
-            </span>
-          </button>
-
+        <div class="header-actions" aria-label="Workspace status">
+          <span class="text-secondary">Codex Web</span>
         </div>
       </header>
 
-      <!-- New thread workspace -->
-      <section class="workspace" id="new-thread">
-
+      <section class="workspace" id="new-thread" aria-label="New Codex thread">
         <div class="workspace-center">
-
           <div class="welcome-section">
-
-            <div class="welcome-mark">
-              <svg class="welcome-icon">
-                <use href="#i-codex"/>
-              </svg>
-            </div>
-
+            <div class="welcome-mark"><svg class="welcome-icon"><use href="#i-codex"></use></svg></div>
             <h1>Start with a task</h1>
-
-            <p class="welcome-description">
-              Build, explore, and ship with Codex.
-            </p>
-
-            <div class="runtime-status coming-soon-panel"
-              role="status" aria-live="polite">
-              <svg class="icon"><use href="#i-construction"/></svg>
-              <span>Codex execution is coming soon...</span>
+            <p class="welcome-description">Build, explore, and ship with Codex.</p>
+            <div class="runtime-status" role="status" aria-live="polite">
+              <span class="runtime-status-text">Checking Codex Web backend…</span>
             </div>
-
           </div>
 
-          <!-- Suggested tasks -->
-          <div class="suggestions-section">
-
-            <div class="suggestions-heading">
-              <span>Get started</span>
-
-              <button type="button" class="text-button"
-                disabled data-coming-soon="true"
-                title="Coming soon">
-                Explore more
-                <span class="coming-soon-indicator">
-                  <svg class="icon"><use href="#i-construction"/></svg>
-                  <span>Coming soon...</span>
-                </span>
-              </button>
-            </div>
-
+          <section class="suggestions-section" aria-label="Suggested tasks">
+            <div class="suggestions-heading"><span>Get started</span></div>
             <div class="suggestions-grid">
-
-              <button class="suggestion-card is-coming-soon"
-                type="button" disabled
-                data-coming-soon="true"
-                data-prompt="Build a feature in this repository.">
-
-                <span class="suggestion-card-icon">
-                  <svg class="icon"><use href="#i-codex"/></svg>
-                </span>
-
-                <span class="suggestion-card-content">
-                  <strong>Build a feature</strong>
-                  <small>Start building something new in this repo.</small>
-                </span>
-
-                <span class="coming-soon-indicator">
-                  <svg class="icon"><use href="#i-construction"/></svg>
-                  <span>Coming soon...</span>
-                </span>
-
+              <button class="suggestion-card" type="button" data-prompt="Build a feature in this repository.">
+                <span class="suggestion-card-icon"><svg class="icon"><use href="#i-codex"></use></svg></span>
+                <span class="suggestion-card-content"><strong>Build a feature</strong><small>Start building something new in this repository.</small></span>
               </button>
-
-              <button class="suggestion-card is-coming-soon"
-                type="button" disabled
-                data-coming-soon="true"
-                data-prompt="Find and fix bugs in my codebase.">
-
-                <span class="suggestion-card-icon">
-                  <svg class="icon"><use href="#i-search"/></svg>
-                </span>
-
-                <span class="suggestion-card-content">
-                  <strong>Find and fix bugs</strong>
-                  <small>Investigate issues and suggest fixes.</small>
-                </span>
-
-                <span class="coming-soon-indicator">
-                  <svg class="icon"><use href="#i-construction"/></svg>
-                  <span>Coming soon...</span>
-                </span>
-
+              <button class="suggestion-card" type="button" data-prompt="Find and fix bugs in my codebase.">
+                <span class="suggestion-card-icon"><svg class="icon"><use href="#i-search"></use></svg></span>
+                <span class="suggestion-card-content"><strong>Find and fix bugs</strong><small>Investigate issues in the current project.</small></span>
               </button>
-
-              <button class="suggestion-card is-coming-soon"
-                type="button" disabled
-                data-coming-soon="true"
-                data-prompt="Explain the architecture of this repository.">
-
-                <span class="suggestion-card-icon">
-                  <svg class="icon"><use href="#i-file"/></svg>
-                </span>
-
-                <span class="suggestion-card-content">
-                  <strong>Understand this repo</strong>
-                  <small>Explore structure, files, and architecture.</small>
-                </span>
-
-                <span class="coming-soon-indicator">
-                  <svg class="icon"><use href="#i-construction"/></svg>
-                  <span>Coming soon...</span>
-                </span>
-
+              <button class="suggestion-card" type="button" data-prompt="Explain the architecture of this repository.">
+                <span class="suggestion-card-icon"><svg class="icon"><use href="#i-file"></use></svg></span>
+                <span class="suggestion-card-content"><strong>Understand this repo</strong><small>Explore the structure and architecture.</small></span>
               </button>
-
             </div>
-          </div>
+          </section>
 
-          <!-- Prompt composer -->
           <form class="composer" id="composer">
-
             <div class="composer-input-area">
-
-              <textarea
-                id="prompt-input"
-                name="prompt"
-                rows="3"
-                placeholder="Write your task here. Codex execution is coming soon..."
-                aria-label="Write a task"
-              ></textarea>
-
-              <div class="attachment-list" id="attachment-list">
-              </div>
-
+              <textarea id="prompt-input" name="prompt" rows="3" placeholder="The Codex backend is not connected yet…" aria-label="Write a task for Codex"></textarea>
             </div>
-
             <div class="composer-toolbar">
-
               <div class="composer-toolbar-left">
-
-                <button class="composer-icon-button is-coming-soon"
-                  type="button" id="attach-file"
-                  aria-label="Attach files — Coming soon"
-                  title="Coming soon" disabled
-                  data-coming-soon="true">
-                  <svg class="icon"><use href="#i-plus"/></svg>
-                  <span class="coming-soon-indicator">
-                    <svg class="icon"><use href="#i-construction"/></svg>
-                    <span>Coming soon...</span>
-                  </span>
+                <button class="composer-select" type="button" id="model-selector" disabled aria-label="Model selection unavailable">
+                  <span>Model</span><svg class="chevron"><use href="#i-chevron"></use></svg>
                 </button>
-
-                <input type="file" id="file-input"
-                  multiple hidden disabled>
-
-                <button class="composer-select is-coming-soon"
-                  type="button" id="model-selector"
-                  disabled data-coming-soon="true"
-                  title="Coming soon">
-                  <span>Model</span>
-                  <svg class="chevron"><use href="#i-chevron"/></svg>
-                  <span class="coming-soon-indicator">
-                    <svg class="icon"><use href="#i-construction"/></svg>
-                    <span>Coming soon...</span>
-                  </span>
+                <button class="composer-select" type="button" id="reasoning-selector" disabled aria-label="Reasoning effort unavailable">
+                  <span>Reasoning</span><svg class="chevron"><use href="#i-chevron"></use></svg>
                 </button>
-
-                <button class="composer-select is-coming-soon"
-                  type="button" id="reasoning-selector"
-                  disabled data-coming-soon="true"
-                  title="Coming soon">
-                  <span>Medium</span>
-                  <svg class="chevron"><use href="#i-chevron"/></svg>
-                  <span class="coming-soon-indicator">
-                    <svg class="icon"><use href="#i-construction"/></svg>
-                    <span>Coming soon...</span>
-                  </span>
-                </button>
-
               </div>
-
               <div class="composer-toolbar-right">
-
-                <button class="composer-icon-button is-coming-soon"
-                  type="button" aria-label="Add context — Coming soon"
-                  title="Coming soon" disabled
-                  data-coming-soon="true">
-                  <svg class="icon"><use href="#i-folder"/></svg>
-                  <span class="coming-soon-indicator">
-                    <svg class="icon"><use href="#i-construction"/></svg>
-                    <span>Coming soon...</span>
-                  </span>
+                <button class="composer-icon-button stop-button" id="stop-button" type="button" hidden disabled aria-label="Interrupt current Codex turn" title="Interrupt Codex">Stop</button>
+                <button class="send-button" type="submit" id="send-button" disabled aria-label="Codex backend unavailable" title="Connect the Codex Web backend first">
+                  <svg class="icon"><use href="#i-send"></use></svg>
                 </button>
-
-                <button class="send-button is-coming-soon"
-                  type="submit" id="send-button"
-                  aria-label="Send message — Coming soon"
-                  title="Codex execution is coming soon"
-                  disabled data-coming-soon="true">
-                  <svg class="icon"><use href="#i-send"/></svg>
-                </button>
-
               </div>
-
             </div>
-
-            <!-- Execution environment -->
-            <div class="composer-footer">
-
-              <div class="execution-modes"
-                role="group" aria-label="Execution environment">
-
-                <button class="mode-button active is-coming-soon"
-                  type="button" data-mode="local"
-                  disabled data-coming-soon="true"
-                  title="Coming soon">
-                  Local
-                </button>
-
-                <button class="mode-button is-coming-soon"
-                  type="button" data-mode="worktree"
-                  disabled data-coming-soon="true"
-                  title="Coming soon">
-                  Worktree
-                </button>
-
-                <button class="mode-button is-coming-soon"
-                  type="button" data-mode="cloud"
-                  disabled data-coming-soon="true"
-                  title="Coming soon">
-                  Cloud
-                </button>
-
-              </div>
-
-              <button class="branch-selector is-coming-soon"
-                type="button" id="branch-selector"
-                disabled data-coming-soon="true"
-                title="Coming soon">
-                <svg class="icon"><use href="#i-git"/></svg>
-                <span>main</span>
-                <svg class="chevron"><use href="#i-chevron"/></svg>
-                <span class="coming-soon-indicator">
-                  <svg class="icon"><use href="#i-construction"/></svg>
-                  <span>Coming soon...</span>
-                </span>
-              </button>
-
-            </div>
-
           </form>
 
-          <p class="workspace-disclaimer">
-            Codex can make mistakes. Review important changes.
-          </p>
-
+          <p class="workspace-disclaimer">Codex can make mistakes. Review important changes.</p>
         </div>
       </section>
 
-      <!-- Conversation area: populated by JavaScript later -->
-      <section class="conversation-view" id="conversation-view" hidden>
-
-        <div class="conversation-messages" id="conversation-messages">
-        </div>
-
-        <div class="conversation-composer-slot" id="conversation-composer">
-        </div>
-
+      <section class="conversation-view" id="conversation-view" hidden aria-label="Codex conversation">
+        <div class="conversation-messages" id="conversation-messages" aria-live="polite"></div>
+        <div class="conversation-composer-slot" id="conversation-composer"></div>
       </section>
 
-      <!-- Future workspace panels -->
-      <section class="secondary-view" id="secondary-view" hidden>
-
+      <section class="secondary-view" id="secondary-view" hidden aria-label="Workspace section">
         <header class="secondary-view-header">
           <h1 id="secondary-view-title"></h1>
           <p id="secondary-view-description"></p>
         </header>
-
-        <div class="secondary-view-content" id="secondary-view-content">
-        </div>
-
+        <div class="secondary-view-content" id="secondary-view-content"></div>
       </section>
-
-    </main>
-  </div>
-
-  <!-- Reusable Coming soon panel for future pages -->
-  <template id="coming-soon-template">
-    <div class="coming-soon-panel" role="status">
-      <div class="coming-soon-icon">
-        <svg class="icon"><use href="#i-construction"/></svg>
-      </div>
-
-      <div class="coming-soon-content">
-        <h2>Coming soon...</h2>
-        <p>This feature is planned for a future release.</p>
-      </div>
-    </div>
-  </template>
-
-</body>
-</html>
-
-
-    <!-- Main application area -->
-    <main class="main-content">
-
-      <!-- Workspace header -->
-      <header class="workspace-header">
-
-        <div class="header-left">
-          <button class="icon-button mobile-sidebar-button"
-            type="button" aria-label="Open sidebar">
-            <svg class="icon"><use href="#i-panel"/></svg>
-          </button>
-
-          <div class="breadcrumbs">
-            <span class="breadcrumb-section">New thread</span>
-          </div>
-        </div>
-
-        <div class="header-actions">
-
-          <button class="header-button" type="button"
-            id="open-project">
-            <svg class="icon"><use href="#i-folder"/></svg>
-            <span>Open</span>
-            <svg class="chevron"><use href="#i-chevron"/></svg>
-          </button>
-
-          <button class="header-button" type="button"
-            id="commit-button">
-            <svg class="icon"><use href="#i-git"/></svg>
-            <span>Commit</span>
-            <svg class="chevron"><use href="#i-chevron"/></svg>
-          </button>
-
-          <div class="header-divider"></div>
-
-          <button class="icon-button" type="button"
-            aria-label="Open files" title="Files">
-            <svg class="icon"><use href="#i-file"/></svg>
-          </button>
-
-          <button class="icon-button" type="button"
-            aria-label="Open terminal" title="Terminal">
-            <svg class="icon"><use href="#i-terminal"/></svg>
-          </button>
-
-          <button class="icon-button" type="button"
-            aria-label="More options" title="More options">
-            <svg class="icon"><use href="#i-more"/></svg>
-          </button>
-
-        </div>
-      </header>
-
-      <!-- New thread workspace -->
-      <section class="workspace" id="new-thread">
-
-        <div class="workspace-center">
-
-          <div class="welcome-section">
-
-            <div class="welcome-mark">
-              <svg class="welcome-icon">
-                <use href="#i-codex"/>
-              </svg>
-            </div>
-
-            <h1>Start with a task</h1>
-
-            <p class="welcome-description">
-              Build, explore, and ship with Codex.
-            </p>
-
-          </div>
-
-          <!-- Suggested tasks -->
-          <div class="suggestions-section">
-
-            <div class="suggestions-heading">
-              <span>Get started</span>
-              <button type="button" class="text-button">
-                Explore more
-              </button>
-            </div>
-
-            <div class="suggestions-grid">
-
-              <button class="suggestion-card"
-                type="button"
-                data-prompt="Build a feature in this repository.">
-
-                <span class="suggestion-card-icon">
-                  <svg class="icon"><use href="#i-codex"/></svg>
-                </span>
-
-                <span class="suggestion-card-content">
-                  <strong>Build a feature</strong>
-                  <small>Start building something new in this repo.</small>
-                </span>
-
-              </button>
-
-              <button class="suggestion-card"
-                type="button"
-                data-prompt="Find and fix bugs in my codebase.">
-
-                <span class="suggestion-card-icon">
-                  <svg class="icon"><use href="#i-search"/></svg>
-                </span>
-
-                <span class="suggestion-card-content">
-                  <strong>Find and fix bugs</strong>
-                  <small>Investigate issues and suggest fixes.</small>
-                </span>
-
-              </button>
-
-              <button class="suggestion-card"
-                type="button"
-                data-prompt="Explain the architecture of this repository.">
-
-                <span class="suggestion-card-icon">
-                  <svg class="icon"><use href="#i-file"/></svg>
-                </span>
-
-                <span class="suggestion-card-content">
-                  <strong>Understand this repo</strong>
-                  <small>Explore structure, files, and architecture.</small>
-                </span>
-
-              </button>
-
-            </div>
-          </div>
-
-          <!-- Prompt composer -->
-          <form class="composer" id="composer">
-
-            <div class="composer-input-area">
-
-              <textarea
-                id="prompt-input"
-                name="prompt"
-                rows="3"
-                placeholder="Ask Codex anything, @ to add files, / for commands"
-                aria-label="Ask Codex anything"
-              ></textarea>
-
-              <div class="attachment-list" id="attachment-list">
-              </div>
-
-            </div>
-
-            <div class="composer-toolbar">
-
-              <div class="composer-toolbar-left">
-
-                <button class="composer-icon-button"
-                  type="button" id="attach-file"
-                  aria-label="Attach files" title="Attach files">
-                  <svg class="icon"><use href="#i-plus"/></svg>
-                </button>
-
-                <input type="file" id="file-input" multiple hidden>
-
-                <button class="composer-select"
-                  type="button" id="model-selector">
-                  <span>Model</span>
-                  <svg class="chevron"><use href="#i-chevron"/></svg>
-                </button>
-
-                <button class="composer-select"
-                  type="button" id="reasoning-selector">
-                  <span>Medium</span>
-                  <svg class="chevron"><use href="#i-chevron"/></svg>
-                </button>
-
-              </div>
-
-              <div class="composer-toolbar-right">
-
-                <button class="composer-icon-button"
-                  type="button" aria-label="Add context"
-                  title="Add context">
-                  <svg class="icon"><use href="#i-folder"/></svg>
-                </button>
-
-                <button class="send-button"
-                  type="submit" id="send-button"
-                  aria-label="Send message" title="Send message">
-                  <svg class="icon"><use href="#i-send"/></svg>
-                </button>
-
-              </div>
-
-            </div>
-
-            <!-- Execution environment -->
-            <div class="composer-footer">
-
-              <div class="execution-modes"
-                role="group" aria-label="Execution environment">
-
-                <button class="mode-button active"
-                  type="button" data-mode="local">
-                  Local
-                </button>
-
-                <button class="mode-button"
-                  type="button" data-mode="worktree">
-                  Worktree
-                </button>
-
-                <button class="mode-button"
-                  type="button" data-mode="cloud">
-                  Cloud
-                </button>
-
-              </div>
-
-              <button class="branch-selector"
-                type="button" id="branch-selector">
-                <svg class="icon"><use href="#i-git"/></svg>
-                <span>main</span>
-                <svg class="chevron"><use href="#i-chevron"/></svg>
-              </button>
-
-            </div>
-
-          </form>
-
-          <p class="workspace-disclaimer">
-            Codex can make mistakes. Review important changes.
-          </p>
-
-        </div>
-      </section>
-
-      <!-- Conversation area: populated by JavaScript later -->
-      <section class="conversation-view" id="conversation-view" hidden>
-
-        <div class="conversation-messages" id="conversation-messages">
-        </div>
-
-        <div class="conversation-composer-slot" id="conversation-composer">
-        </div>
-
-      </section>
-
-      <!-- Future workspace panels -->
-      <section class="secondary-view" id="secondary-view" hidden>
-        <header class="secondary-view-header">
-          <h1 id="secondary-view-title"></h1>
-          <p id="secondary-view-description"></p>
-        </header>
-
-        <div class="secondary-view-content" id="secondary-view-content">
-        </div>
-      </section>
-
     </main>
   </div>
 </body>
 </html>
-
