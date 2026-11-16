@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#171717">
   <meta name="description" content="Codex Web — your coding agent workspace.">
-  <title>Codex</title>
+  <title>Codex Web</title>
 
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
@@ -15,6 +15,7 @@
 <body>
   <!-- SVG icon library -->
   <svg xmlns="http://www.w3.org/2000/svg" class="icon-library">
+
     <symbol id="i-codex" viewBox="0 0 24 24">
       <path d="M12 2.8c1.7 0 2.8 1.1 3.1 2.7 1.6-.7 3.1-.2 4 1.2.9 1.5.5 2.9-.7 4.1 1.5.6 2.3 2 2 3.7-.3 1.7-1.5 2.5-3.1 2.6.1 1.7-.8 2.9-2.4 3.3-1.7.4-2.9-.4-3.6-1.8-1 1.3-2.5 1.6-3.9.7-1.4-.9-1.7-2.4-1-3.9-1.7 0-2.9-1-3.1-2.7-.2-1.7.7-2.9 2.3-3.4-1-1.4-.8-2.9.5-4.1 1.3-1.1 2.8-1.1 4.1 0 .1-1.5.8-2.4 1.8-2.4Z"
         fill="none" stroke="currentColor" stroke-width="1.4"
@@ -137,6 +138,20 @@
         stroke="currentColor" stroke-width="1.8"
         stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+
+    <!-- Construction / Coming soon icon -->
+    <symbol id="i-construction" viewBox="0 0 24 24">
+      <path d="M4 20h16M6 20l5-16h2l5 16M9 12h6M7.5 16h9"
+        fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="i-github" viewBox="0 0 24 24">
+      <path d="M9 19c-4.3 1.3-4.3-2.2-6-2.5M15 21v-3.5a3 3 0 0 0-.8-2.3c2.7-.3 5.5-1.3 5.5-6A4.7 4.7 0 0 0 18.4 6a4.3 4.3 0 0 0-.1-3S17.3 2.7 15 4.2a12.3 12.3 0 0 0-6 0C6.7 2.7 5.7 3 5.7 3a4.3 4.3 0 0 0-.1 3 4.7 4.7 0 0 0-1.3 3.3c0 4.7 2.8 5.7 5.5 6A3 3 0 0 0 9 17.5V21"
+        fill="none" stroke="currentColor" stroke-width="1.5"
+        stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
   </svg>
 
   <div class="app-shell">
@@ -145,7 +160,7 @@
     <aside class="sidebar" id="sidebar">
 
       <div class="sidebar-header">
-        <a class="brand" href="#" aria-label="Codex home">
+        <a class="brand" href="#" aria-label="Codex Web home">
           <svg class="brand-icon"><use href="#i-codex"/></svg>
           <span>Codex</span>
         </a>
@@ -168,20 +183,32 @@
           <kbd>⌘ K</kbd>
         </a>
 
-        <a class="navigation-item" href="#automations"
-          data-page="automations">
+        <a class="navigation-item is-coming-soon"
+          href="#automations" data-page="automations"
+          data-coming-soon="true" aria-disabled="true"
+          tabindex="-1" title="Coming soon">
           <span class="navigation-icon">
             <svg class="icon"><use href="#i-calendar"/></svg>
           </span>
           <span class="navigation-label">Automations</span>
+          <span class="coming-soon-indicator">
+            <svg class="icon"><use href="#i-construction"/></svg>
+            <span>Coming soon...</span>
+          </span>
         </a>
 
-        <a class="navigation-item" href="#skills"
-          data-page="skills">
+        <a class="navigation-item is-coming-soon"
+          href="#skills" data-page="skills"
+          data-coming-soon="true" aria-disabled="true"
+          tabindex="-1" title="Coming soon">
           <span class="navigation-icon">
             <svg class="icon"><use href="#i-sparkles"/></svg>
           </span>
           <span class="navigation-label">Skills</span>
+          <span class="coming-soon-indicator">
+            <svg class="icon"><use href="#i-construction"/></svg>
+            <span>Coming soon...</span>
+          </span>
         </a>
 
         <a class="navigation-item" href="#plugins"
@@ -203,13 +230,17 @@
           <span>Threads</span>
 
           <div class="section-actions">
-            <button class="icon-button small"
-              type="button" aria-label="Search threads">
+            <button class="icon-button small is-coming-soon"
+              type="button" aria-label="Search threads"
+              title="Coming soon" disabled
+              data-coming-soon="true">
               <svg class="icon"><use href="#i-search"/></svg>
             </button>
 
-            <button class="icon-button small"
-              type="button" aria-label="Thread options">
+            <button class="icon-button small is-coming-soon"
+              type="button" aria-label="Thread options"
+              title="Coming soon" disabled
+              data-coming-soon="true">
               <svg class="icon"><use href="#i-more"/></svg>
             </button>
           </div>
@@ -270,6 +301,387 @@
 
       </footer>
     </aside>
+
+    <!-- Main application area -->
+    <main class="main-content">
+
+      <!-- Workspace header -->
+      <header class="workspace-header">
+
+        <div class="header-left">
+          <button class="icon-button mobile-sidebar-button"
+            type="button" aria-label="Open sidebar">
+            <svg class="icon"><use href="#i-panel"/></svg>
+          </button>
+
+          <div class="breadcrumbs">
+            <span class="breadcrumb-section">New thread</span>
+          </div>
+        </div>
+
+        <div class="header-actions">
+
+          <button class="header-button is-coming-soon"
+            type="button" id="open-project"
+            disabled data-coming-soon="true"
+            title="Coming soon">
+            <svg class="icon"><use href="#i-folder"/></svg>
+            <span>Open</span>
+            <svg class="chevron"><use href="#i-chevron"/></svg>
+            <span class="coming-soon-indicator">
+              <svg class="icon"><use href="#i-construction"/></svg>
+              <span>Coming soon...</span>
+            </span>
+          </button>
+
+          <button class="header-button is-coming-soon"
+            type="button" id="commit-button"
+            disabled data-coming-soon="true"
+            title="Coming soon">
+            <svg class="icon"><use href="#i-git"/></svg>
+            <span>Commit</span>
+            <svg class="chevron"><use href="#i-chevron"/></svg>
+            <span class="coming-soon-indicator">
+              <svg class="icon"><use href="#i-construction"/></svg>
+              <span>Coming soon...</span>
+            </span>
+          </button>
+
+          <div class="header-divider"></div>
+
+          <button class="icon-button is-coming-soon"
+            type="button" aria-label="Files — Coming soon"
+            title="Coming soon" disabled
+            data-coming-soon="true">
+            <svg class="icon"><use href="#i-file"/></svg>
+            <span class="coming-soon-indicator">
+              <svg class="icon"><use href="#i-construction"/></svg>
+              <span>Coming soon...</span>
+            </span>
+          </button>
+
+          <button class="icon-button is-coming-soon"
+            type="button" aria-label="Terminal — Coming soon"
+            title="Coming soon" disabled
+            data-coming-soon="true">
+            <svg class="icon"><use href="#i-terminal"/></svg>
+            <span class="coming-soon-indicator">
+              <svg class="icon"><use href="#i-construction"/></svg>
+              <span>Coming soon...</span>
+            </span>
+          </button>
+
+          <button class="icon-button is-coming-soon"
+            type="button" aria-label="More options — Coming soon"
+            title="Coming soon" disabled
+            data-coming-soon="true">
+            <svg class="icon"><use href="#i-more"/></svg>
+            <span class="coming-soon-indicator">
+              <svg class="icon"><use href="#i-construction"/></svg>
+              <span>Coming soon...</span>
+            </span>
+          </button>
+
+        </div>
+      </header>
+
+      <!-- New thread workspace -->
+      <section class="workspace" id="new-thread">
+
+        <div class="workspace-center">
+
+          <div class="welcome-section">
+
+            <div class="welcome-mark">
+              <svg class="welcome-icon">
+                <use href="#i-codex"/>
+              </svg>
+            </div>
+
+            <h1>Start with a task</h1>
+
+            <p class="welcome-description">
+              Build, explore, and ship with Codex.
+            </p>
+
+            <div class="runtime-status coming-soon-panel"
+              role="status" aria-live="polite">
+              <svg class="icon"><use href="#i-construction"/></svg>
+              <span>Codex execution is coming soon...</span>
+            </div>
+
+          </div>
+
+          <!-- Suggested tasks -->
+          <div class="suggestions-section">
+
+            <div class="suggestions-heading">
+              <span>Get started</span>
+
+              <button type="button" class="text-button"
+                disabled data-coming-soon="true"
+                title="Coming soon">
+                Explore more
+                <span class="coming-soon-indicator">
+                  <svg class="icon"><use href="#i-construction"/></svg>
+                  <span>Coming soon...</span>
+                </span>
+              </button>
+            </div>
+
+            <div class="suggestions-grid">
+
+              <button class="suggestion-card is-coming-soon"
+                type="button" disabled
+                data-coming-soon="true"
+                data-prompt="Build a feature in this repository.">
+
+                <span class="suggestion-card-icon">
+                  <svg class="icon"><use href="#i-codex"/></svg>
+                </span>
+
+                <span class="suggestion-card-content">
+                  <strong>Build a feature</strong>
+                  <small>Start building something new in this repo.</small>
+                </span>
+
+                <span class="coming-soon-indicator">
+                  <svg class="icon"><use href="#i-construction"/></svg>
+                  <span>Coming soon...</span>
+                </span>
+
+              </button>
+
+              <button class="suggestion-card is-coming-soon"
+                type="button" disabled
+                data-coming-soon="true"
+                data-prompt="Find and fix bugs in my codebase.">
+
+                <span class="suggestion-card-icon">
+                  <svg class="icon"><use href="#i-search"/></svg>
+                </span>
+
+                <span class="suggestion-card-content">
+                  <strong>Find and fix bugs</strong>
+                  <small>Investigate issues and suggest fixes.</small>
+                </span>
+
+                <span class="coming-soon-indicator">
+                  <svg class="icon"><use href="#i-construction"/></svg>
+                  <span>Coming soon...</span>
+                </span>
+
+              </button>
+
+              <button class="suggestion-card is-coming-soon"
+                type="button" disabled
+                data-coming-soon="true"
+                data-prompt="Explain the architecture of this repository.">
+
+                <span class="suggestion-card-icon">
+                  <svg class="icon"><use href="#i-file"/></svg>
+                </span>
+
+                <span class="suggestion-card-content">
+                  <strong>Understand this repo</strong>
+                  <small>Explore structure, files, and architecture.</small>
+                </span>
+
+                <span class="coming-soon-indicator">
+                  <svg class="icon"><use href="#i-construction"/></svg>
+                  <span>Coming soon...</span>
+                </span>
+
+              </button>
+
+            </div>
+          </div>
+
+          <!-- Prompt composer -->
+          <form class="composer" id="composer">
+
+            <div class="composer-input-area">
+
+              <textarea
+                id="prompt-input"
+                name="prompt"
+                rows="3"
+                placeholder="Write your task here. Codex execution is coming soon..."
+                aria-label="Write a task"
+              ></textarea>
+
+              <div class="attachment-list" id="attachment-list">
+              </div>
+
+            </div>
+
+            <div class="composer-toolbar">
+
+              <div class="composer-toolbar-left">
+
+                <button class="composer-icon-button is-coming-soon"
+                  type="button" id="attach-file"
+                  aria-label="Attach files — Coming soon"
+                  title="Coming soon" disabled
+                  data-coming-soon="true">
+                  <svg class="icon"><use href="#i-plus"/></svg>
+                  <span class="coming-soon-indicator">
+                    <svg class="icon"><use href="#i-construction"/></svg>
+                    <span>Coming soon...</span>
+                  </span>
+                </button>
+
+                <input type="file" id="file-input"
+                  multiple hidden disabled>
+
+                <button class="composer-select is-coming-soon"
+                  type="button" id="model-selector"
+                  disabled data-coming-soon="true"
+                  title="Coming soon">
+                  <span>Model</span>
+                  <svg class="chevron"><use href="#i-chevron"/></svg>
+                  <span class="coming-soon-indicator">
+                    <svg class="icon"><use href="#i-construction"/></svg>
+                    <span>Coming soon...</span>
+                  </span>
+                </button>
+
+                <button class="composer-select is-coming-soon"
+                  type="button" id="reasoning-selector"
+                  disabled data-coming-soon="true"
+                  title="Coming soon">
+                  <span>Medium</span>
+                  <svg class="chevron"><use href="#i-chevron"/></svg>
+                  <span class="coming-soon-indicator">
+                    <svg class="icon"><use href="#i-construction"/></svg>
+                    <span>Coming soon...</span>
+                  </span>
+                </button>
+
+              </div>
+
+              <div class="composer-toolbar-right">
+
+                <button class="composer-icon-button is-coming-soon"
+                  type="button" aria-label="Add context — Coming soon"
+                  title="Coming soon" disabled
+                  data-coming-soon="true">
+                  <svg class="icon"><use href="#i-folder"/></svg>
+                  <span class="coming-soon-indicator">
+                    <svg class="icon"><use href="#i-construction"/></svg>
+                    <span>Coming soon...</span>
+                  </span>
+                </button>
+
+                <button class="send-button is-coming-soon"
+                  type="submit" id="send-button"
+                  aria-label="Send message — Coming soon"
+                  title="Codex execution is coming soon"
+                  disabled data-coming-soon="true">
+                  <svg class="icon"><use href="#i-send"/></svg>
+                </button>
+
+              </div>
+
+            </div>
+
+            <!-- Execution environment -->
+            <div class="composer-footer">
+
+              <div class="execution-modes"
+                role="group" aria-label="Execution environment">
+
+                <button class="mode-button active is-coming-soon"
+                  type="button" data-mode="local"
+                  disabled data-coming-soon="true"
+                  title="Coming soon">
+                  Local
+                </button>
+
+                <button class="mode-button is-coming-soon"
+                  type="button" data-mode="worktree"
+                  disabled data-coming-soon="true"
+                  title="Coming soon">
+                  Worktree
+                </button>
+
+                <button class="mode-button is-coming-soon"
+                  type="button" data-mode="cloud"
+                  disabled data-coming-soon="true"
+                  title="Coming soon">
+                  Cloud
+                </button>
+
+              </div>
+
+              <button class="branch-selector is-coming-soon"
+                type="button" id="branch-selector"
+                disabled data-coming-soon="true"
+                title="Coming soon">
+                <svg class="icon"><use href="#i-git"/></svg>
+                <span>main</span>
+                <svg class="chevron"><use href="#i-chevron"/></svg>
+                <span class="coming-soon-indicator">
+                  <svg class="icon"><use href="#i-construction"/></svg>
+                  <span>Coming soon...</span>
+                </span>
+              </button>
+
+            </div>
+
+          </form>
+
+          <p class="workspace-disclaimer">
+            Codex can make mistakes. Review important changes.
+          </p>
+
+        </div>
+      </section>
+
+      <!-- Conversation area: populated by JavaScript later -->
+      <section class="conversation-view" id="conversation-view" hidden>
+
+        <div class="conversation-messages" id="conversation-messages">
+        </div>
+
+        <div class="conversation-composer-slot" id="conversation-composer">
+        </div>
+
+      </section>
+
+      <!-- Future workspace panels -->
+      <section class="secondary-view" id="secondary-view" hidden>
+
+        <header class="secondary-view-header">
+          <h1 id="secondary-view-title"></h1>
+          <p id="secondary-view-description"></p>
+        </header>
+
+        <div class="secondary-view-content" id="secondary-view-content">
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Reusable Coming soon panel for future pages -->
+  <template id="coming-soon-template">
+    <div class="coming-soon-panel" role="status">
+      <div class="coming-soon-icon">
+        <svg class="icon"><use href="#i-construction"/></svg>
+      </div>
+
+      <div class="coming-soon-content">
+        <h2>Coming soon...</h2>
+        <p>This feature is planned for a future release.</p>
+      </div>
+    </div>
+  </template>
+
+</body>
+</html>
+
 
     <!-- Main application area -->
     <main class="main-content">
